@@ -1,124 +1,179 @@
-# 💳 Credit Card Fraud Detection  
+# 💳 Credit Card Fraud Detection – Project Overview
 
-![Python](https://img.shields.io/badge/python-3.13-blue)  
-![Status](https://img.shields.io/badge/status-in%20progress-yellow)  
+This repository provides a **public overview** of my final-year BSc Computer Science project:
+a **credit card fraud detection system** built with machine learning, focused on **business impact** and **real-world workflows**.
 
----
-
-## 📌 Project Overview  
-A **real-world inspired system** for detecting fraudulent credit card transactions using **Python** and **Machine Learning**.  
-
-This project simulates a **production-ready ML pipeline**:  
-- Data preprocessing & feature engineering  
-- Training and comparing multiple ML models  
-- Evaluating trade-offs between false positives and false negatives  
-- Future deployment as a REST API & web app  
-
-The goal is to deliver something **practical for companies** and **reproducible for research**.
+> 🔐 The full codebase, detailed reports and experiment history are stored in a **private repository** and are available upon request (e.g. for academic evaluation or recruitment purposes).
 
 ---
 
-## 📊 Dataset  
-- Source: [Kaggle – Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud)  
-- **284,807 transactions**, of which **492 are fraudulent (0.17%)**  
-- Highly **imbalanced dataset** → handled via resampling & anomaly detection techniques  
+## 🧭 Executive Summary
 
-⚠️ Dataset stored in `data/data_raw/` (ignored by Git).
+The goal of the project is to build a machine learning pipeline that helps a bank:
 
----
+- Detect **fraudulent credit card transactions** early
+- Maximize **recall on fraud cases (Class = 1)**  
+- Keep **false positives** at a manageable, business-acceptable level
+- Provide **interpretable outputs** that fraud analysts and risk teams can trust
 
-## 🛠️ Technologies & Libraries  
-- **Python 3.13.0**  
-- **Jupyter Notebooks** → experimentation  
-- **NumPy** → numerical computing  
-- **Pandas** → data handling  
-- **Matplotlib** & **Seaborn** → visualization  
-- **Scikit-learn** → ML models & evaluation  
-- **ipykernel** → Jupyter integration  
+The system is designed as if it were to be deployed in a **production environment**  
+(REST API + basic dashboard, container-ready).
 
 ---
 
-## 🔬 Methods  
-1. **Data Preprocessing**  
-   - Handle missing values  
-   - Normalize numerical features  
-   - Manage class imbalance (SMOTE / undersampling)  
+## 🏦 Business Problem & Objectives
 
-2. **Exploratory Data Analysis (EDA)**  
-   - Fraud vs. non-fraud distribution  
-   - Correlations, PCA visualization  
+Credit card fraud has a very low frequency but a **disproportionately high financial impact**  
+(chargebacks, investigations, reputational damage).
 
-3. **Model Training**  
-   - Logistic Regression  
-   - Decision Trees  
-   - Random Forest  
-   - Gradient Boosting  
-   - Neural Networks (optional, advanced)  
+**Key business question:**
 
-4. **Model Evaluation**  
-   - Accuracy, Precision, Recall, F1-score  
-   - ROC-AUC & PR-AUC  
-   - Confusion Matrix  
-   - Cross-validation  
+> Can we design an ML model that catches most fraud cases  
+> without overwhelming analysts and customers with false alarms?
+
+**Objectives:**
+
+- High **recall** on fraud cases  
+- Controlled **false positive rate**  
+- Explainable logic for risk/fraud teams  
+- Reproducible, extensible code structure (ML pipeline → API → dashboard)
 
 ---
 
-## 📈 Results  
-- Comparative results of models (tables + plots)  
-- ROC & PR curves for visualization  
-- Discussion of trade-offs (false positives vs. false negatives)  
+## 📊 Dataset (Summary)
 
-📌 *This section will be continuously updated as experiments progress.*
+- Public anonymized dataset from real credit card transactions  
+- ~285k transactions, ~0.17% fraud rate (high class imbalance)
+- Features:
+  - PCA-transformed components (`V1`–`V28`)
+  - `Amount`, `Time`
+  - `Class` (0 = legitimate, 1 = fraud)
+
+Raw data is **not** stored in this public repo.
 
 ---
 
-## ✅ Project Structure  
-```bash
-cc-fraud-detection/
-├── data/
-│   └── data_raw/        # raw dataset (ignored in git)
-├── notebooks/           # Jupyter notebooks (EDA, modeling, results)
-├── reports/
-│   └── figures/         # plots, visualizations
-├── src/                 # Python source code
-├── logs/                # training logs (ignored in git)
-├── models/              # saved models (ignored in git)
-├── requirements.txt     # Python dependencies
-├── .gitignore
-└── README.md
-```
+## 🔬 Approach & Methods
+
+The modelling approach follows a **step-by-step, production-inspired pipeline**:
+
+- Baseline models:
+  - **Logistic Regression**
+  - **Decision Tree Classifier**
+- Imbalanced data handling:
+  - Class weights
+  - Oversampling (e.g. SMOTE – in experiments)
+- Planned / ongoing:
+  - **Random Forest**, **Gradient Boosting**
+  - Threshold tuning based on business trade-offs
+  - Model explainability (e.g. feature importance, SHAP-style analysis)
+
 ---
 
-## 📌 Project Management
+## 📈 Key Results (Snapshot)
 
-Trello Board → [Kanban (To Do / In Progress / Done)](https://trello.com/b/c9be9zsO/my-trello-board)
+📌 This section will be continuously updated as experiments progress.  
 
-## 🚀 Deployment (Planned)
+The table below shows an **indicative snapshot** of selected models (using current experiments):
 
-- Serve best model via REST API (FastAPI / Flask)
-- Simple UI (Streamlit / Flask)
-- Optional cloud deployment: Heroku / AWS / Azure
+| Model                      | Recall (Fraud) | Precision (Fraud) | ROC-AUC | Notes                           |
+|----------------------------|----------------|--------------------|--------|---------------------------------|
+| Logistic Regression        | …              | …                  | …      | Baseline linear model           |
+| Decision Tree (tuned)      | …              | …                  | …      | Non-linear, interpretable rules |
 
-## 🎓 Certifications & Skills Acquired
+🔎 Full experiment history, additional models and week-by-week analysis are documented in the private repository  
+(reports, notebooks and JSON metrics).
 
-To support this project, I completed industry-recognized certifications, ensuring both theoretical grounding and practical skills:
+---
 
-| Certification / Course | Provider | Month Completed | Linked Report Section |
-|-------------------------|----------|-----------------|------------------------|
-| Supervised Machine Learning: Regression & Classification | Coursera (Stanford / DeepLearning.AI) | Month 1 | Intro & Background |
-| Data Science with Python | Great Learning Academy | Month 1 | Intro & Background |
-| Python, Pandas, Data Visualization (Micro-courses) | Kaggle Learn | Month 1–2 | Data & Methodology |
-| Machine Learning with Python (IBM Digital Badge) | IBM Cognitive Class | Month 2 | Data & Methodology |
-| Intermediate Machine Learning | Kaggle Learn | Month 3 | Experiments & Modeling |
-| Feature Engineering | Kaggle Learn | Month 3 | Experiments & Modeling |
-| ML Explainability (SHAP, LIME) | Kaggle Learn | Month 3–4 | Results & Explainability |
-| Docker Essentials | IBM | Month 5 | Deployment |
-| AWS Cloud Practitioner Essentials | AWS Training | Month 5 | Deployment |
-| Google Cloud Skill Badges (ML on GCP, Responsible AI) | Google Cloud | Month 5 | Deployment |
-| Deploy Web App with Containers | Microsoft Learn | Month 5 | Deployment |
+## 📊 Visual Preview
 
+Selected visual outputs from the project, from data understanding to model performance and interpretability.
 
-## 👤 Author
+### Data insights
 
-Lazaros Voulistiotis
-🎓 BSc Computer Science (Final Year) | Aspiring Machine Learning Engineer
+![Fraud rate by hour](figures/fraud_rate_by_hour.png)
+
+*Fraud rate per hour of day. Night-time hours (around 02:00–04:00) show a much higher fraud rate, suggesting time-aware fraud strategies (stricter rules at night, softer during daytime).*
+
+![Top 15 absolute correlations with Class](figures/corr_with_target.png)
+
+*Top 15 features ranked by absolute Pearson correlation with the fraud label (`Class`). These variables are prioritised in early experimentation and cross-checked later with model-based importance.*
+
+---
+
+### Model comparison & performance
+
+![Logistic Regression vs Decision Tree (tuned)](figures/logreg_vs_dt_metrics.png)
+
+*Side-by-side comparison of key fraud metrics (precision, recall, F1 for fraud class and ROC-AUC) between the Logistic Regression baseline and the tuned Decision Tree model.*
+
+![Confusion Matrix — Decision Tree (tuned)](figures/dt_tuned_confusion.png)
+
+*Confusion matrix for the tuned Decision Tree on the test set, highlighting the trade-off between detected fraud (TP), missed fraud (FN) and false positives.*
+
+![ROC Curve — Decision Tree (tuned)](figures/dt_roc_curve_tuned.png)
+
+*ROC curve for the tuned Decision Tree model (AUC ≈ 0.95), showing strong separation between fraud and non-fraud classes.*
+
+---
+
+### Model interpretability
+
+![Shallow Decision Tree (max_depth=3)](figures/dt_simple_tree.png)
+
+*A shallow Decision Tree (max_depth=3) illustrating example decision rules and thresholds that can be inspected and discussed with fraud analysts and risk stakeholders.*
+
+---
+
+## 🧱 System Design (High-level)
+
+The full project (private repo) is structured as a **modular ML system**:
+
+- `notebooks/` – research & experimentation (EDA, model development)
+- `src/` – reusable, production-like Python modules  
+  (data loading, preprocessing, training, evaluation)
+- `models/` – serialized models ready for serving (e.g. `.joblib`)
+- `reports/` – markdown reports that align with thesis chapters
+- Planned:
+  - REST API endpoint `/predict` for scoring transactions
+  - Simple dashboard for analysts (Streamlit or Flask-based)
+  - Containerization (Docker) and cloud deployment demo
+
+---
+
+## 🛠️ Tools & Technologies
+
+- **Language:** Python  
+- **Libraries:** scikit-learn, NumPy, pandas, Matplotlib/Seaborn  
+- **Experimentation:** Jupyter Notebooks  
+- **Version control:** Git & GitHub  
+- **Project management:** Trello (Kanban – To Do / In Progress / Done)  
+- **Planned deployment:** FastAPI/Flask + Docker + cloud hosting
+
+---
+
+## 🎓 Learning & Certifications (selected)
+
+As part of this project, I am systematically building my skills in ML and MLOps through online courses:
+
+- Supervised Machine Learning: Regression & Classification – *Coursera (Stanford / DeepLearning.AI)*
+- Data Science with Python – *Great Learning Academy*
+- Machine Learning with Python (Digital Badge) – *IBM Cognitive Class*
+- Kaggle micro-courses – *Python, Pandas, Data Visualization, Intermediate ML, Feature Engineering*
+- Docker, cloud and deployment courses (AWS / IBM / Microsoft, etc.)
+
+These are referenced in the thesis as **evidence of structured, industry-relevant learning**.
+
+---
+
+## 👤 Author & Contact
+
+**Lazaros Voulistiotis**  
+BSc Computer Science (Final Year)  
+Aspiring Machine Learning Engineer 
+
+- LinkedIn: *[Lazaros Voulistiotis](https://www.linkedin.com/in/lazaros-voulistiotis/)*   
+
+💡 *Full code and technical documentation are available on request  
+(in a private GitHub repository used for my thesis and academic evaluation).*
