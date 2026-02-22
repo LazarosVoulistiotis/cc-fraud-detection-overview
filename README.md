@@ -55,7 +55,6 @@ This is a strong, business‑friendly trade‑off: we catch most fraud while kee
 
 ## 📈 Key Figures (recommended for the public overview)
 
-> Place these images under `assets/` in this repository (see paths below).
 
 ### 1) Confusion Matrix (XGBoost at thr ≈ 0.09)
 ![Confusion Matrix — XGBoost (thr≈0.09)](assets/week12_xgb_cm_test.png)
