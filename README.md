@@ -77,10 +77,6 @@ To make the model **auditable and responsible**, SHAP (TreeExplainer) was applie
 - **True Negative** (near‑zero fraud probability)  
 - **Borderline** case near the operating threshold **0.0884**
 
-**Recommended public figure (pick ONE):**
-- a compact global importance plot:
-  - `reports/figures/week15/shap_mean_abs_bar.png` (from the full repo)
-  - save it here as `assets/shap_mean_abs_bar.png`
 
 ![SHAP mean(|SHAP|) — Global Drivers](assets/shap_mean_abs_bar.png)
 
