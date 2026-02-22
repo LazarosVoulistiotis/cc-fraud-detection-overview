@@ -1,103 +1,113 @@
-# 💳 Credit Card Fraud Detection — Public Project Preview (Business-Oriented ML)
+# 💳 Credit Card Fraud Detection — Public Project Overview (Business‑Oriented ML)
 
-This is a **public showcase** of my final‑year BSc Computer Science project: a **credit card fraud detection** system built with machine learning and evaluated with a **business / risk** mindset (metrics → decisions → operational impact).
+This is a **public showcase** of my final‑year BSc Computer Science thesis project: a **credit card fraud detection** system built with machine learning and evaluated with a **business / risk** mindset (metrics → decisions → operational impact).
 
-> 🔐 The full end‑to‑end implementation (week‑by‑week reports, experiment logs, full scorecards, models) is currently in a **private repository** and can be shared on request (academic evaluation / recruitment).
+> 🔐 The full end‑to‑end implementation (week‑by‑week reports, experiment logs, model artifacts) lives in a separate repository and can be shared on request (academic evaluation / recruitment).
 
 ---
 
 ## 🧭 Executive Summary
 
-Fraud detection is a **rare-event classification** problem where accuracy is misleading. The practical goal is to:
+Fraud detection is a **rare‑event classification** problem where accuracy is misleading. The practical goal is to:
 
 - **Stop fraud** (high **Recall/Fraud**, reduce fraud leakage)
 - Keep **false alarms** operationally acceptable (reasonable **Precision/Fraud**, reduce customer friction + analyst workload)
-- Treat the classification threshold as an **operational policy** (not “0.5 by default”)
+- Treat the probability threshold as an **operational policy** (not “0.5 by default”)
+
+**Current champion model:** **XGBoost** (tree‑based gradient boosting) with a **cost‑optimised threshold** selected on validation and applied once on the locked test set.
+
+---
+
+## 📊 Dataset
+
+Kaggle “Credit Card Fraud Detection”: **284,807** transactions over two days, **492 frauds (~0.17%)**.  
+Features: anonymised PCA components **V1…V28** plus **Time** and **Amount**.
+
+**Why this matters:** with such imbalance, you must rely on **PR‑AUC**, **cost‑based thresholding**, and careful validation/testing.
 
 ---
 
 ## 🏦 Business translation (how we read the metrics)
 
 - **TP (True Positives)** → frauds stopped
-- **FN (False Negatives)** → frauds missed (financial loss / risk)
+- **FN (False Negatives)** → frauds missed (direct loss / risk)
 - **FP (False Positives)** → false alarms (manual review cost + customer friction)
 
-Threshold tuning is performed with a **cost-sensitive policy** (example: `cost_fp=1`, `cost_fn=20`) and selected on validation, then applied to test.
+We therefore optimise and report results using an explicit cost policy:
+
+- `cost_fp = 1`
+- `cost_fn = 20`
 
 ---
 
-## 📊 Dataset (Summary)
+## ✅ Results snapshot (locked test set)
 
-- Classic anonymized credit card fraud dataset (Kaggle / ULB-style)
-- ~285k transactions, ~0.17% fraud rate (extreme class imbalance)
-- Features: `V1..V28` (PCA components) + `Amount` + `Time`
-- Target: `Class` (0 = legitimate, 1 = fraud)
+**Operating threshold (val‑selected, cost‑optimal):** **0.0884**  
+At this operating point:
 
-✅ Raw data is **not included** in this public repo.
+- **TP = 77**, **FP = 20**, **FN = 18**, **TN = 56,631**
+- **Precision(Fraud) = 0.7938**, **Recall(Fraud) = 0.8105**
+- **PR‑AUC (AP) = 0.8171**
 
----
-
-## 📈 Public Snapshot (XGBoost + Business Threshold Policy)
-
-The model is evaluated using PR‑AUC (more informative under class imbalance), and a validation‑selected operating threshold is applied to the test set.
-
-**XGBoost (test, threshold ≈ 0.0884):**
-- Precision(Fraud) ≈ **0.794**
-- Recall(Fraud) ≈ **0.811**
-- PR‑AUC ≈ **0.817**
-- Confusion (business view): **TP=77**, **FN=18**, **FP=20**, **TN=56631**
-
-Interpretation:
-- We stop **77** fraud transactions in the test set.
-- We miss **18** frauds (leakage).
-- We raise **20** false alarms (review/customer friction).
+This is a strong, business‑friendly trade‑off: we catch most fraud while keeping false alarms low.
 
 ---
 
-## 🖼️ Visual Preview (Key Business Figures)
+## 📈 Key Figures (recommended for the public overview)
 
-### Precision–Recall Curve (Imbalanced KPI)
-![PR Curve — XGBoost](figures/week12_xgb_pr_test.png)
+> Place these images under `assets/` in this repository (see paths below).
 
-### Cost vs Threshold (Policy Selection)
-![Cost vs Threshold — XGBoost](figures/week12_xgb_cost_vs_threshold_test.png)
+### 1) Confusion Matrix (XGBoost at thr ≈ 0.09)
+![Confusion Matrix — XGBoost (thr≈0.09)](assets/week12_xgb_cm_test.png)
 
-### Confusion Matrix (Business Impact)
-![Confusion Matrix — XGBoost](figures/week12_xgb_cm_test.png)
+### 2) Cost vs Threshold (why thr=0.0884)
+![Cost vs Threshold — XGBoost](assets/week12_xgb_cost_vs_threshold_test.png)
 
----
-
-## 🧱 High-level System Design (Private repo)
-
-The full project is structured as a modular ML system:
-
-- `src/` – training & evaluation scripts (pipeline style)
-- `reports/` – week-by-week markdown + auditable artifacts (JSON/CSV)
-- `models/` – saved models (`.joblib`)
-- Planned (Month 4):
-  - Interpretability (feature importance + SHAP-style explanations)
-  - REST API `/predict` + lightweight dashboard
-  - Optional Docker packaging
+### 3) Precision–Recall Curve (PR‑AUC)
+![Precision–Recall Curve — XGBoost](assets/week12_xgb_pr_test.png)
 
 ---
 
-## 🛠️ Tools & Technologies
+## 🔍 Explainability (Week 15 — SHAP)
 
-Python • pandas • NumPy • scikit‑learn • XGBoost • Matplotlib • Git/GitHub
+To make the model **auditable and responsible**, SHAP (TreeExplainer) was applied to the champion XGBoost model.
+
+**Global drivers (mean |SHAP|):** V4, V14, V8, V12, V15, V11, …  
+**Local case studies:**  
+- **True Positive** (very high fraud probability)  
+- **True Negative** (near‑zero fraud probability)  
+- **Borderline** case near the operating threshold **0.0884**
+
+**Recommended public figure (pick ONE):**
+- a compact global importance plot:
+  - `reports/figures/week15/shap_mean_abs_bar.png` (from the full repo)
+  - save it here as `assets/shap_mean_abs_bar.png`
+
+![SHAP mean(|SHAP|) — Global Drivers](assets/shap_mean_abs_bar.png)
+
+---
+
+## 🗂️ Project structure (overview)
+
+- `src/` — scripts for data splitting, training, evaluation, explainability
+- `models/` — saved model artifacts (joblib)
+- `reports/` — weekly write‑ups + metrics/sweeps (full repo)
+- `assets/` — **(this repo)** selected figures for the public overview
+
+---
+
+## ⚡ Reproducibility (high level)
+
+1. Download `creditcard.csv` from Kaggle (not committed due to licensing).
+2. Create stratified train/val/test splits (seeded).
+3. Train and evaluate models (LogReg → Decision Tree → Random Forest → XGBoost).
+4. Select threshold on validation using cost policy; apply once on locked test.
+5. Run SHAP for global + local explanations.
 
 ---
 
 ## 👤 Author
 
-**Lazaros Voulistiotis**  
-BSc Computer Science (Final Year) — Thesis Project  
-Aspiring Machine Learning Engineer
-
-(LinkedIn link available in GitHub bio)
+**Lazaros Voulistiotis** — final‑year Computer Science student, aspiring Machine Learning Engineer.
 
 ---
-
-## 📝 Notes
-
-- This public repository is intentionally lightweight (overview + selected figures).
-- Raw dataset and full run artifacts are excluded from version control.
