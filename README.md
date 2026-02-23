@@ -11,10 +11,11 @@ This is a **public showcase** of my final‑year BSc Computer Science thesis pro
 Fraud detection is a **rare‑event classification** problem where accuracy is misleading. The practical goal is to:
 
 - **Stop fraud** (high **Recall/Fraud**, reduce fraud leakage)
-- Keep **false alarms** operationally acceptable (reasonable **Precision/Fraud**, reduce customer friction + analyst workload)
+- Keep **false alarms** operationally acceptable (high **Precision/Fraud**, reduce customer friction + analyst workload)
 - Treat the probability threshold as an **operational policy** (not “0.5 by default”)
 
-**Current champion model:** **XGBoost** (tree‑based gradient boosting) with a **cost‑optimised threshold** selected on validation and applied once on the locked test set.
+**Current champion model:** **XGBoost** (tree‑based gradient boosting).  
+**Final operating policy (Month 4):** **precision constraint** (**precision ≥ 0.80**) selected on validation and applied once on the locked test set.
 
 ---
 
@@ -23,7 +24,7 @@ Fraud detection is a **rare‑event classification** problem where accuracy is m
 Kaggle “Credit Card Fraud Detection”: **284,807** transactions over two days, **492 frauds (~0.17%)**.  
 Features: anonymised PCA components **V1…V28** plus **Time** and **Amount**.
 
-**Why this matters:** with such imbalance, you must rely on **PR‑AUC**, **cost‑based thresholding**, and careful validation/testing.
+**Why this matters:** with such imbalance, you must rely on **PR‑AUC**, robust validation/testing, and a threshold policy aligned with operational constraints.
 
 ---
 
@@ -33,61 +34,58 @@ Features: anonymised PCA components **V1…V28** plus **Time** and **Amount**.
 - **FN (False Negatives)** → frauds missed (direct loss / risk)
 - **FP (False Positives)** → false alarms (manual review cost + customer friction)
 
-We therefore optimise and report results using an explicit cost policy:
-
-- `cost_fp = 1`
-- `cost_fn = 20`
+Instead of a default 0.5 threshold, the project treats the threshold as a **deployment decision**. During Month 4 we evaluated multiple policies (cost‑based, max‑F metrics, precision constraint) and **locked** the final policy below.
 
 ---
 
 ## ✅ Results snapshot (locked test set)
 
-**Operating threshold (val‑selected, cost‑optimal):** **0.0884**  
-At this operating point:
+**Final operating policy:** `precision_constraint_p80` (precision ≥ 0.80)  
+**Selected threshold (validation):** **0.1279**  
+**Reported once on locked test set:**
 
-- **TP = 77**, **FP = 20**, **FN = 18**, **TN = 56,631**
-- **Precision(Fraud) = 0.7938**, **Recall(Fraud) = 0.8105**
-- **PR‑AUC (AP) = 0.8171**
+- **TP = 77**, **FP = 16**, **FN = 18**, **TN = 56,635**
+- **Precision(Fraud) = 0.8280**, **Recall(Fraud) = 0.8105**
+- **F1 = 0.8191**, **F2 = 0.8140**
+- **MCC = 0.8189** (strong single‑number metric under class imbalance)
+- **PR‑AUC (AP) = 0.8171**, **ROC‑AUC = 0.9699**
 
-This is a strong, business‑friendly trade‑off: we catch most fraud while keeping false alarms low.
+**Business interpretation:** we catch **77/95** frauds while keeping false alarms extremely low (**16** false positives on ~56k legitimate transactions). This reduces fraud losses and keeps analyst workload/customer friction manageable.
 
 ---
 
 ## 📈 Key Figures (recommended for the public overview)
 
+### 1) Confusion Matrix — XGBoost (final policy: precision ≥ 0.80)
+![Confusion Matrix — XGBoost (precision≥0.80)](assets/week16_confusion_matrix_test_p80.png)
 
-### 1) Confusion Matrix (XGBoost at thr ≈ 0.09)
-![Confusion Matrix — XGBoost (thr≈0.09)](assets/week12_xgb_cm_test.png)
+### 2) Precision–Recall Curve (Validation) — threshold selected point
+![PR Curve (VAL) — threshold selected](assets/week16_pr_curve_val_p80.png)
 
-### 2) Cost vs Threshold (why thr=0.0884)
-![Cost vs Threshold — XGBoost](assets/week12_xgb_cost_vs_threshold_test.png)
-
-### 3) Precision–Recall Curve (PR‑AUC)
-![Precision–Recall Curve — XGBoost](assets/week12_xgb_pr_test.png)
-
----
-
-## 🔍 Explainability (Week 15 — SHAP)
-
-To make the model **auditable and responsible**, SHAP (TreeExplainer) was applied to the champion XGBoost model.
-
-**Global drivers (mean |SHAP|):** V4, V14, V8, V12, V15, V11, …  
-**Local case studies:**  
-- **True Positive** (very high fraud probability)  
-- **True Negative** (near‑zero fraud probability)  
-- **Borderline** case near the operating threshold **0.0884**
-
-
+### 3) Explainability — SHAP (global drivers)
 ![SHAP mean(|SHAP|) — Global Drivers](assets/shap_mean_abs_bar.png)
 
+*(Optional, if you want one analyst-style example in the public repo)*  
+### 4) Explainability — LIME (local case study)
+![LIME local explanation (borderline case)](assets/week16_lime_borderline.png)
+
 ---
 
-## 🗂️ Project structure (overview)
+## 🔍 Explainability (why it matters)
 
-- `src/` — scripts for data splitting, training, evaluation, explainability
-- `models/` — saved model artifacts (joblib)
-- `reports/` — weekly write‑ups + metrics/sweeps (full repo)
-- `assets/` — **(this repo)** selected figures for the public overview
+Fraud decisions affect customers (declines, step‑up verification) and must be explainable.
+
+- **SHAP (TreeExplainer):** audit‑grade global + local explanations for the tree‑based champion model.
+- **LIME (Tabular):** model‑agnostic, on‑demand local explanations aligned with how analysts review flagged transactions.
+
+Together, SHAP + LIME improve trust, investigation speed, and support responsible deployment.
+
+---
+
+## 🗂️ Project structure (public overview)
+
+- `assets/` — selected figures for the public overview (**this repo**)
+- (Full repo) `src/`, `models/`, `reports/` — end‑to‑end implementation (private repo)
 
 ---
 
@@ -96,13 +94,11 @@ To make the model **auditable and responsible**, SHAP (TreeExplainer) was applie
 1. Download `creditcard.csv` from Kaggle (not committed due to licensing).
 2. Create stratified train/val/test splits (seeded).
 3. Train and evaluate models (LogReg → Decision Tree → Random Forest → XGBoost).
-4. Select threshold on validation using cost policy; apply once on locked test.
-5. Run SHAP for global + local explanations.
+4. Select threshold on validation using a business‑aligned policy; apply once on locked test.
+5. Run SHAP + LIME for global + local explanations.
 
 ---
 
 ## 👤 Author
 
 **Lazaros Voulistiotis** — final‑year Computer Science student, aspiring Machine Learning Engineer.
-
----
