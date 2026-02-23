@@ -54,7 +54,7 @@ Instead of a default 0.5 threshold, the project treats the threshold as a **depl
 
 ---
 
-## 📈 Key Figures (recommended for the public overview)
+## 📈 Key Figures
 
 ### 1) Confusion Matrix — XGBoost (final policy: precision ≥ 0.80)
 ![Confusion Matrix — XGBoost (precision≥0.80)](assets/week16_confusion_matrix_test_p80.png)
@@ -65,7 +65,6 @@ Instead of a default 0.5 threshold, the project treats the threshold as a **depl
 ### 3) Explainability — SHAP (global drivers)
 ![SHAP mean(|SHAP|) — Global Drivers](assets/shap_mean_abs_bar.png)
 
-*(Optional, if you want one analyst-style example in the public repo)*  
 ### 4) Explainability — LIME (local case study)
 ![LIME local explanation (borderline case)](assets/week16_lime_borderline.png)
 
